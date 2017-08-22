@@ -39,10 +39,9 @@ fosstreamingexist() {
 packages_install(){
     apt-get update >/dev/null 2>&1
     apt-get install -y --force-yes git >/dev/null 2>&1
-    apt-get install -y --force-yes install php5-cli curl >/dev/null 2>&1
+    apt-get install -y --force-yes php5-cli curl >/dev/null 2>&1
     apt-get install -y --force-yes libxml2-dev  > /dev/null 2>&1
     apt-get install -y --force-yes libbz2-dev  > /dev/null 2>&1
-    apt-get install -y --force-yes curl   > /dev/null 2>&1
     apt-get install -y --force-yes libcurl4-openssl-dev   > /dev/null 2>&1
     apt-get install -y --force-yes libmcrypt-dev  > /dev/null 2>&1
     apt-get install -y --force-yes libmhash2 > /dev/null 2>&1
@@ -151,9 +150,10 @@ packages_install(){
     apt-get install -y --force-yes xtrans-dev > /dev/null 2>&1
     apt-get install -y --force-yes zlib1g-dev > /dev/null 2>&1
     apt-get install -y --force-yes php5-fpm  > /dev/null 2>&1
-}
-
-fos_install(){
+    apt-get install -y --force-yes libgtk2.0-0 libgdk-pixbuf2.0-0 libfontconfig1 libxrender1 libx11-6 libglib2.0-0  libxft2 libfreetype6 libc6 zlib1g libpng12-0 libstdc++6-4.8-dbg-arm64-cross libgcc1  > /dev/null 2>&1
+    }
+    ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so.6.11.1 /usr/lib/libfreetype.so.6
+    fos_install(){
     /usr/sbin/useradd -s /sbin/nologin -U -d /home/fos-streaming -m fosstreaming > /dev/null
     cd /home/fos-streaming > /dev/null
     wget http://fos-streaming.com/fos-streaming_unpack_x84_64.tar.gz -O /home/fos-streaming/fos-streaming_unpack_x84_64.tar.gz  > /dev/null 2>&1
@@ -190,8 +190,8 @@ startfos(){
     /home/fos-streaming/fos/php/sbin/php-fpm
     /home/fos-streaming/fos/nginx/sbin/nginx_fos
     sleep 3
-    curl "http://127.0.0.1:8000/install_database_tables.php?install"
-    curl "http://127.0.0.1:8000/install_database_tables.php?update"
+    curl "http://127.0.0.1:7777/install_database_tables.php?install"
+    curl "http://127.0.0.1:7777/install_database_tables.php?update"
     rm -r /home/fos-streaming/fos/www/install_database_tables.php
 }
 
@@ -205,11 +205,25 @@ ffmpeg()
     chmod 755 /usr/local/bin/ffprobe  > /dev/null 2>&1
     chown www-data:root /usr/local/nginx/html  > /dev/null 2>&1
 }
-
+foswebport-streamport()
+{
+    /bin/mkdir /home/fos-streaming/fos/www1/
+    /bin/mkdir /home/fos-streaming/fos/www1/log/
+    chown fosstreaming:fosstreaming /home/fos-streaming/fos/www1/log/
+    /bin/cp -R /home/fos-streaming/fos/www/* /home/fos-streaming/fos/www1/
+    /bin/rm /home/fos-streaming/fos/www1/*.*
+    /bin/rm -rf /home/fos-streaming/fos/www1/hl
+    /bin/ln -s /home/fos-streaming/fos/www/hl /home/fos-streaming/fos/www1/hl
+    /bin/ln -s /home/fos-streaming/fos/www/config.php /home/fos-streaming/fos/www1/config.php
+    /bin/ln -s /home/fos-streaming/fos/www/functions.php /home/fos-streaming/fos/www1/functions.php
+    /bin/ln -s /home/fos-streaming/fos/www/stream.php /home/fos-streaming/fos/www1/stream.php
+    /bin/ln -s /home/fos-streaming/fos/www/playlist.php /home/fos-streaming/fos/www1/playlist.php
+ }   
 info(){
  echo "********************************************************************************************;
     echo "FOS-Streaming installed.. \n";
-    echo "visit management page: 'http://host:8000' \n";
+    echo "streaming port   page: 'http://host:8000' \n";
+    echo "visit management page: 'http://host:7777' \n";
     echo "Login: \n";
     echo "Username: admin \n";
     echo "Password: admin \n";
@@ -256,5 +270,6 @@ database
 ffmpeg
 startfos
 #test
+foswebport-streamport
 info
 

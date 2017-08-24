@@ -84,6 +84,24 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                         $folder = $setting->hlsfolder . '/';
                         $files = "";
                         $file = $setting->hlsfolder . '/' . $stream->id . '_.m3u8';
+						if (file_exists($file)) {
+							sleep(1);
+							$directory = "/home/fos-streaming/fos/www/hl/";
+							$filecount = 0;
+							$hlfiles = glob($directory . "$stream->id*.*");
+							if ($hlfiles){
+							$filecount = count($hlfiles);
+							}
+							//echo "There were $filecount hlfiles";
+							if ($filecount > 16) {
+								
+							} else {
+								exit;
+							}
+							
+						} else {
+							exit;
+							}
                         if (file_exists($file) && preg_match_all("/(.*?).ts/", file_get_contents($file), $data)) {
                             $files = $data[0];
                             foreach ($files as $file) {
@@ -99,7 +117,6 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                                 $next = sprintf($stream->id . "_%d.ts", $segment + 1);
                                 $nextnext = sprintf($stream->id . "_%d.ts", $segment + 2);
                                 if (!file_exists($folder . $next)) {
-                                    sleep(1);
                                     $try++;
                                     continue;
                                 }
@@ -108,7 +125,6 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                                 while (($try <= 16) && !file_exists($folder . $nextnext)) {
                                     $line = stream_get_line($fopen, 4096);
                                     if (empty($line)) {
-                                        sleep(1);
                                         ++$try;
                                         continue;
                                     }
@@ -120,7 +136,9 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                                 $try = 0;
                                 $segment++;
                             }
-                        }
+                        } else { 
+							exit;
+							}
                     }
                 }
             }

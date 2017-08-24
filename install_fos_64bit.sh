@@ -87,6 +87,7 @@ packages_install(){
     apt-get install -y --force-yes libssl-dev
     apt-get install -y --force-yes libstdc++-4.8-dev
     apt-get install -y --force-yes libstdc++6-4.7-dev
+	apt-get install -y --force-yes libstdc++
     apt-get install -y --force-yes libsybdb5
     apt-get install -y --force-yes libtasn1-3-dev
     apt-get install -y --force-yes libtasn1-6-dev
@@ -164,9 +165,9 @@ packages_install(){
     git clone https://github.com/pantgr/FOS-Streaming-v1.git
     cp -R /home/fos-streaming/fos/www/FOS-Streaming-v1/* /home/fos-streaming/fos/www/
 
-    echo 'www-data ALL = (root) NOPASSWD: /usr/local/bin/ffmpeg' >> /etc/sudoers
-    echo 'www-data ALL = (root) NOPASSWD: /usr/local/bin/ffprobe' >> /etc/sudoers
-    echo '*/2 * * * * www-data /home/fos-streaming/fos/php/bin/php /home/fos-streaming/fos/www/cron.php' >> /etc/crontab
+    echo 'fosstreaming = (root) NOPASSWD: /usr/local/bin/ffmpeg' >> /etc/sudoers
+    echo 'fosstreaming = (root) NOPASSWD: /usr/local/bin/ffprobe' >> /etc/sudoers
+    echo '*/2 * * * * fosstreaming /home/fos-streaming/fos/php/bin/php /home/fos-streaming/fos/www/cron.php' >> /etc/crontab
 
     sed --in-place '/exit 0/d' /etc/rc.local
     echo 'sleep 10' >> /etc/rc.local

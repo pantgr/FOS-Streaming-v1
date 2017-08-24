@@ -21,7 +21,7 @@
 
 
 ## Installation (64bit):
-1. `wget https://raw.githubusercontent.com/pantgr/FOS-Streaming-v1/master/install_fos_64bit.sh`
+1. `wget https://raw.githubusercontent.com/pantgr/FOS-Streaming-v1/master/install_fos_64bit.sh --no-check-certificate` 
 2. `chmod 755 install_fos_64bit.sh`
 3. `./install_fos_64bit.sh`
 

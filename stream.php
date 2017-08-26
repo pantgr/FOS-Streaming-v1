@@ -85,7 +85,6 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                         $files = "";
                         $file = $setting->hlsfolder . '/' . $stream->id . '_.m3u8';
 			if (file_exists($file)) {
-				sleep(1);
 				$directory = "/home/fos-streaming/fos/www/hl/";
 				$filecount = 0;
 				$hlfiles = glob($directory . "$stream->id*.*");
@@ -93,7 +92,7 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
 				$filecount = count($hlfiles);
 				}
 				//echo "There were $filecount hlfiles";
-				if ($filecount > 16) {
+				if ($filecount > 8) {
 				
 					} else {
 					exit;
@@ -108,7 +107,7 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                                 if (!file_exists($folder . $file)) {
                                     exit();
                                 }
-                                readfile($folder . $file);
+                            readfile($folder . $file);
                             }
                             preg_match("/_(.*)\\./", array_pop($files), $clean);
                             $segment = $clean[1];
@@ -117,7 +116,7 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                                 $next = sprintf($stream->id . "_%d.ts", $segment + 1);
                                 $nextnext = sprintf($stream->id . "_%d.ts", $segment + 2);
                                 if (!file_exists($folder . $next)) {
-				    sleep(1);
+									sleep(1);
                                     $try++;
                                     continue;
                                 }
@@ -126,21 +125,18 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                                 while (($try <= 16) && !file_exists($folder . $nextnext)) {
                                     $line = stream_get_line($fopen, 4096);
                                     if (empty($line)) {
-					sleep(1);
+										sleep(1);
                                         ++$try;
                                         continue;
                                     }
                                     echo $line;
-                                    $t = 0;
                                 }
                                 echo stream_get_line($fopen, filesize($folder . $next) - ftell($fopen));
                                 fclose($fopen);
                                 $try = 0;
                                 $segment++;
                             }
-                        } else { 
-							exit;
-							}
+                        }
                     }
                 }
             }

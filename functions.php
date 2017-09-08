@@ -43,9 +43,13 @@ function stop_stream($id)
     $setting = Setting::first();
 
     if (checkPid($stream->pid)) {
+		sleep(1);
         shell_exec("kill -9 " . $stream->pid);
+		sleep(1);
         shell_exec("/bin/rm -r /home/fos-streaming/fos/www/" . $setting->hlsfolder . "/" . $stream->id . "*");
     }
+	sleep(1);
+	shell_exec("/bin/rm -r /home/fos-streaming/fos/www/" . $setting->hlsfolder . "/" . $stream->id . "*");
     $stream->pid = "";
     $stream->running = 0;
     $stream->status = 0;
@@ -347,7 +351,20 @@ http {
             root   html;
         }
     }
-}';
+}
+#rtmp_auto_push on;
+#rtmp {
+#        server {
+#                listen 1935;
+#                chunk_size 4096;
+#				max_streams 32;
+#                application live {
+#                    live on;
+#					interleave on;
+#                    record off;
+#                }
+#        }
+#}';
     $file = '/usr/local/nginx/conf/nginx.conf';
     $current = ob_get_clean();
     file_put_contents($file, $current);

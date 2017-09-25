@@ -8,7 +8,7 @@ function closed()
     if ($user_activity_id != 0) {
         $active = Activity::find($user_activity_id);
         $active->date_end = date('Y-m-d H:i:s');
-        $active->save();
+        $active->delete();
     }
     fastcgi_finish_request();
     exit;
@@ -84,23 +84,23 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                         $folder = $setting->hlsfolder . '/';
                         $files = "";
                         $file = $setting->hlsfolder . '/' . $stream->id . '_.m3u8';
-			if (file_exists($file)) {
-				$directory = "/home/fos-streaming/fos/www/hl/";
-				$filecount = 0;
-				$hlfiles = glob($directory . "$stream->id*.*");
-				if ($hlfiles){
-				$filecount = count($hlfiles);
-				}
+//			if (file_exists($file)) {
+//				$directory = "/home/fos-streaming/fos/www/hl/";
+//				$filecount = 0;
+//				$hlfiles = glob($directory . "$stream->id_*.*");
+//				if ($hlfiles){
+//				$filecount = count($hlfiles);
+//				}
 				//echo "There were $filecount hlfiles";
-				if ($filecount > 8) {
-				
-					} else {
-					exit;
-					}
-					
-					} else {
-					exit;
-					}
+//				if ($filecount > 8) {
+//				
+//					} else {
+//					exit;
+//					}
+//					
+//				} else {
+//					exit;
+//					}
                         if (file_exists($file) && preg_match_all("/(.*?).ts/", file_get_contents($file), $data)) {
                             $files = $data[0];
                             foreach ($files as $file) {

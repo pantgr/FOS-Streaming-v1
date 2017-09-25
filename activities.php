@@ -21,7 +21,7 @@ if (isset($_GET['delete'])) {
     $message['message'] = "Activity deleted";
 }
 
-$activity = Activity::where('date_end', '<>', '0000-00-00 00:00:00')->get();
+$activity = Activity::where('date_start', '<>', '0000-00-00 00:00:00')->get();
 
 
 echo $template->view()->make('activities')

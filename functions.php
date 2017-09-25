@@ -157,7 +157,7 @@ function start_stream($id)
         $stream->status = 1;
     } else {
         $stream->checker = 0;
-        $checkstreamurl = shell_exec('' . $setting->ffprobe_path . ' -analyzeduration 1000000 -probesize 9000000 -i "' . $stream->streamurl . '" -v  quiet -print_format json -show_streams 2>&1');
+        $checkstreamurl = shell_exec('/usr/bin/timeout 15s ' . $setting->ffprobe_path . ' -analyzeduration 1000000 -probesize 9000000 -i "' . $stream->streamurl . '" -v  quiet -print_format json -show_streams 2>&1');
         $streaminfo = json_decode($checkstreamurl, true);
         if ($streaminfo) {
             $pid = shell_exec(getTranscode($stream->id));
@@ -190,7 +190,7 @@ function start_stream($id)
             if ($stream->streamurl2) {
                 $stream->checker = 2;
 
-                $checkstreamurl = shell_exec('' . $setting->ffprobe_path . ' -analyzeduration 1000000 -probesize 9000000 -i "' . $stream->streamurl . '" -v  quiet -print_format json -show_streams 2>&1');
+                $checkstreamurl = shell_exec('/usr/bin/timeout 15s ' . $setting->ffprobe_path . ' -analyzeduration 1000000 -probesize 9000000 -i "' . $stream->streamurl2 . '" -v  quiet -print_format json -show_streams 2>&1');
                 $streaminfo = json_decode($checkstreamurl, true);
 
                 if ($streaminfo) {
@@ -221,7 +221,7 @@ function start_stream($id)
                     }
                     if ($stream->streamurl3) {
                         $stream->checker = 3;
-                        $checkstreamurl = shell_exec('' . $setting->ffprobe_path . ' -analyzeduration 1000000 -probesize 9000000 -i "' . $stream->streamurl . '" -v  quiet -print_format json -show_streams 2>&1');
+                        $checkstreamurl = shell_exec('/usr/bin/timeout 15s ' . $setting->ffprobe_path . ' -analyzeduration 1000000 -probesize 9000000 -i "' . $stream->streamurl3 . '" -v  quiet -print_format json -show_streams 2>&1');
                         $streaminfo = json_decode($checkstreamurl, true);
                         if ($streaminfo) {
                             $pid = shell_exec(getTranscode($stream->id, 3));

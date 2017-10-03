@@ -19,12 +19,16 @@
                     <table id="example" class="table table-striped responsive-utilities jambo_table">
                         <thead>
                         <tr class="headings">
-                            <th>User</th>
-                            <th>Stream</th>
+                            <th>UserName</th>
+							<th>Stream</th>
+							<th>Id</th>
+                            <th>UserId</th>
                             <th>DataStart</th>
+							<th>OnLine</th>
                             <th>IP</th>
                             <th>User agent</th>
-                            <th>Action</th>
+                            <th>pid</th>
+							<th>Action</th>
                             </th>
                         </tr>
                         </thead>
@@ -33,9 +37,13 @@
                                 <tr>
                                     <td>{{ $activity->user ? $activity->user->username : '' }}</td>
                                     <td>{{ $activity->stream->name }}</td>
+									<td>{{ $activity->user_id }}</td>
+									<td>{{ $activity->id }}</td>
                                     <td>{{ $activity->date_start }}</td>
+									<td>{{ $activity->date_end }}</td>
                                     <td>{{ $activity->user_ip }}</td>
                                     <td>{{ $activity->user_agent }}</td>
+									<td>{{ $activity->pid }}</td>
                                     <td class="center">
                                         <a class="btn btn-danger" href="activities.php?delete={{ $activity->id }}" title="Delete" onclick="return confirm('Are you sure?')">Remove</a>
                                     </td>

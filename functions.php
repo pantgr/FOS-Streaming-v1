@@ -1,5 +1,36 @@
 <?php
 
+function lockfile_open()
+{
+    $pidfile = '/tmp/' . basename($_GET['username']) . '.pid';
+    if (file_exists($pidfile)) {
+        $pidchk = file_get_contents($pidfile);
+        $running = posix_kill($pidchk, 0);
+        if ($running) {
+            return false;
+        } else {
+            unlink($pidfile);
+        }
+    }
+    $handle = fopen($pidfile, 'x');
+    if (!$handle) {
+        return false;
+    }
+    $pidchk = getmypid();
+    fwrite($handle, $pidchk);
+    fclose($handle);
+    register_shutdown_function('lockfile_close');
+    return true;
+}
+
+function lockfile_close()
+{
+    $pidfile = '/tmp/' . basename($_GET['username']) . '.pid';
+    if (file_exists($pidfile)) {
+        unlink($pidfile);
+    }
+}
+
 function redirect($url, $time)
 {
     echo "<script>

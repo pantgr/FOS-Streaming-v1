@@ -24,26 +24,25 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
     $username = $_GET['username'];
     $password = $_GET['password'];
     $stream_id = intval($_GET['stream']);
-  if (!BlockedUseragent::where('name', '=', $user_agent)->first())
-    if (!BlockedIp::where('ip', '=', $_SERVER['REMOTE_ADDR'])->first()) {
-      if ($user = User::where('username', '=', $username)->where('password', '=', $password)->where('active', '=', 1)->first()) {
+	if (!BlockedUseragent::where('name', '=', $user_agent)->first())
+		if (!BlockedIp::where('ip', '=', $_SERVER['REMOTE_ADDR'])->first()) {
+			if ($user = User::where('username', '=', $username)->where('password', '=', $password)->where('active', '=', 1)->first()) {
 
-      } else { 
-	    $log  = "Worning --> Ip: [".$_SERVER['REMOTE_ADDR'].'] - '.date("d-m-Y H:i:s").
-            " - Attempt ".('Failed Login -').
-            " User: ".$username.
-            " Pass: ".$password.
-	    " ".PHP_EOL; 
-            file_put_contents('/home/fos-streaming/fos/www1/log/fos-loginfail'.'.log', $log, FILE_APPEND);
-            sleep (10);
-		  }
-
-          if ($user = User::where('username', '=', $username)->where('password', '=', $password)->where('active', '=', 1)->first()) {
-            if ($user->exp_date == "0000-00-00" || $user->exp_date > date('Y-m-d H:i:s')) {
-                $user_id = $user->id;
-                $user_max_connections = $user->max_connections;
-                $user_expire_date = $user->exp_date;
-                $user_activity = $user->activity()->where('date_end', '=', NULL)->get();
+				} else { 
+						$log  = "Worning --> Ip: [".$_SERVER['REMOTE_ADDR'].'] - '.date("d-m-Y H:i:s").
+						" - Attempt ".('Failed Login -').
+						" User: ".$username.
+						" Pass: ".$password.
+						" ".PHP_EOL; 
+						file_put_contents('/home/fos-streaming/fos/www1/log/fos-loginfail'.'.log', $log, FILE_APPEND);
+						sleep (10);
+						}
+				if ($user = User::where('username', '=', $username)->where('password', '=', $password)->where('active', '=', 1)->first()) {
+				if ($user->exp_date == "0000-00-00" || $user->exp_date > date('Y-m-d H:i:s')) {
+					$user_id = $user->id;
+					$user_max_connections = 2;
+					$user_expire_date = $user->exp_date;
+                $user_activity = $user->activity()->where('user_id', '=', $user_id)->get();
                 $active_cons = $user_activity->count();
                 if ($user_max_connections != 1 && $active_cons >= $user_max_connections) {
                     $maxconntactionactivity = Activity::where("user_id", "=", $user_id)->where("user_ip", "=", $user_ip)->where("date_end", "=", null)->first();
@@ -52,14 +51,26 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                             --$active_cons;
                         }
                     }
+					
                 }
-                if ($user_max_connections == 0 || $active_cons < $user_max_connections) {
-                    if ($stream = Stream::find($_GET['stream'])) {
-                        if ($user_activity_id != 0) {
-                            $active = Activity::find($user_activity_id);
-                        } else {
+				if ($user_max_connections == 0 || $active_cons < $user_max_connections) {
+					if ($stream = Stream::find($_GET['stream'])) {
+						if ($user_activity_id != 0) {
+							$active = Activity::find($user_activity_id);
+					} else {
                             $active = new Activity();
-                        }
+							}
+						$activityinfouser = $user->activity()->where('user_id', '=', $user_id)->get();
+						$activityuser = $activityinfouser->count();
+						$lastActivity = Activity::all()->where('user_id', '=', $user_id)->first();
+						$lastpidActivity = $lastActivity->pid;
+						$pidnew = getmypid();
+						if ($lastpidActivity != $pidnew) {
+							Activity::where('pid' , '=', $lastpidActivity)->delete();
+							shell_exec("kill " . $lastpidActivity);
+						}
+						$activityinfouser1 = $user->activity()->where('user_id', '=', $user_id)->get();
+						$activityuser1 = $activityinfouser1->count();
                         $active->user_id = $user->id;
                         $active->stream_id = $stream->id;
                         $active->user_agent = $user_agent;
@@ -84,23 +95,6 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                         $folder = $setting->hlsfolder . '/';
                         $files = "";
                         $file = $setting->hlsfolder . '/' . $stream->id . '_.m3u8';
-//			if (file_exists($file)) {
-//				$directory = "/home/fos-streaming/fos/www/hl/";
-//				$filecount = 0;
-//				$hlfiles = glob($directory . "$stream->id_*.*");
-//				if ($hlfiles){
-//				$filecount = count($hlfiles);
-//				}
-				//echo "There were $filecount hlfiles";
-//				if ($filecount > 8) {
-//				
-//					} else {
-//					exit;
-//					}
-//					
-//				} else {
-//					exit;
-//					}
                         if (file_exists($file) && preg_match_all("/(.*?).ts/", file_get_contents($file), $data)) {
                             $files = $data[0];
                             foreach ($files as $file) {
@@ -138,7 +132,7 @@ if (isset($_GET['username']) && isset($_GET['password']) && isset($_GET['stream'
                             }
                         }
                     }
-                }
+				}
             }
         }
     }
